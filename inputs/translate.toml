@@ -1,0 +1,11 @@
+[transform]
+    name = "translate"
+    translation = [1.0, 2.0, 0.0]
+
+[io]
+    input = "../data/mesh1.vtu"
+    output = "../data/mesh1_translated.vtu"
+
+[quality]
+    compute_quality = false
+ 

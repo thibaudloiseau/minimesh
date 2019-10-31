@@ -1,0 +1,10 @@
+[transform]
+    name = "merge"
+    merge_nodes = false
+
+[io]
+    inputs = ["../data/mesh1.vtu", "../data/mesh2.vtu"]
+    output = "../data/merged.vtu"
+
+[quality]
+    compute_quality = true
