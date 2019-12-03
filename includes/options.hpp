@@ -1,6 +1,8 @@
 #pragma once
 
-#include "toml.hpp"
+#include <memory>
+
+#include "cpptoml.h"
 
 class OptionsParser
 {
@@ -14,5 +16,5 @@ public:
 
 private:
   std::string m_file_name;
-  toml::value m_data;
+  std::shared_ptr<cpptoml::table> m_data;
 };

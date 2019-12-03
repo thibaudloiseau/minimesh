@@ -5,61 +5,55 @@
 #include <memory>
 #include <tuple>
 
-#include "cxxopts.hpp"
-
 #include "options.hpp"
 
-const std::pair<std::string, std::string> parse(int argc, char **argv)
+void print_usage()
 {
-  try {
-    cxxopts::Options options("minimesh",
-      "A VTK-focused unstructured mesh manipulation mini-app");
-    
-    options
-      .positional_help("[optional args]")
-      .show_positional_help();
-
-    options.add_options()
-      ("v,view", "View a mesh", cxxopts::value<std::string>(), "Mesh file")
-      ("t,transform", "Transform (merge, translate) a mesh", cxxopts::value<std::string>(), "Transform file")
-      ("h,help", "Print help");
-
-    auto result = options.parse(argc, argv);
-
-    if (result.count("help")) {
-      std::cout << options.help({""}) << "\n";
-      std::exit(0);
-    }
-
-    if (result.count("transform")) {
-      return std::make_pair("transform", result["transform"].as<std::string>());
-    }
-
-    if (result.count("view")) {
-      return std::make_pair("view", result["view"].as<std::string>());
-    }
-
-    return std::make_pair("", "");
-
-  } catch (const cxxopts::OptionException& e) {
-    std::cout << "Error parsing options: " << e.what() << "\n";
-    std::exit(1);
-  }
+  std::cout << "A VTK-focused unstructured mesh manipulation mini-app\n";
+  std::cout << "Usage:\n";
+  std::cout << "  minimesh [OPTION...]\n";
+  std::cout << "\n";
+  std::cout << "  -v, --view Mesh file            View a mesh\n";
+  std::cout << "  -t, --transform Transform file  Transform (merge, translate) a mesh\n";
+  std::cout << "  -h, --help                      Print help\n";
 }
 
 int main(int argc, char **argv)
 {
   std::string command;
   std::string file_name;
-  std::tie(command, file_name) = parse(argc, argv);
 
-  if (command.compare("transform") == 0) {
-    auto op = std::make_unique<OptionsParser>(file_name);
-    auto params = op->parse();
-
-  } else if (command.compare("view") == 0) {
-
+  if (argc > 1) {
+    command = argv[1];
   }
- 
+
+  if ((argc <= 1) || command == "-h" || command == "--help") {
+    print_usage();
+    return EXIT_SUCCESS;
+  }
+
+  if (command == "-v" || command == "--view") {
+    if (argc < 3) {
+      std::cerr << "Error: missing file\n";
+      print_usage();
+      return EXIT_FAILURE;
+    }
+    file_name = argv[2];
+  } else if (command == "-t" || command == "--transform") {
+    if (argc < 3) {
+      std::cerr << "Error: missing file\n";
+      print_usage();
+      return EXIT_FAILURE;
+    }
+    file_name = argv[2];
+    auto op = new OptionsParser(file_name);
+    /*auto params = */op->parse();
+    delete op;
+  } else {
+    std::cerr << "Error: unknown command\n";
+    print_usage();
+    return EXIT_FAILURE;
+  }
+
   return EXIT_SUCCESS;
 }
